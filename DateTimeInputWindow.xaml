@@ -1,0 +1,157 @@
+﻿<Window x:Class="CountdownWidget.DateTimeInputWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Введите дату и время"
+        Width="340"
+        Height="240"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="False"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border Background="#FF000000" CornerRadius="15" Padding="20">
+        <Grid>
+            <TextBlock Text="Введите дату и время"
+                      Foreground="White"
+                      FontSize="16"
+                      FontWeight="SemiBold"
+                      HorizontalAlignment="Left"
+                      Margin="0,0,0,15"/>
+
+            <TextBlock Text="Формат: ГГГГ-ММ-ДД ЧЧ:ММ:СС"
+                      Foreground="LightGray"
+                      FontSize="12"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Margin="0,35,0,0"/>
+
+            <TextBox x:Name="InputTextBox"
+                     Background="Transparent"
+                     Foreground="White"
+                     BorderBrush="#666"
+                     BorderThickness="2"
+                     FontSize="15"
+                     FontWeight="Medium"
+                     Padding="10"
+                     Margin="0,70,0,0"
+                     VerticalAlignment="Top"
+                     Height="40"
+                     HorizontalAlignment="Stretch"
+                     HorizontalContentAlignment="Center"
+                     SelectionBrush="#007ACC"
+                     CaretBrush="White"/>
+
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Bottom" 
+                        Margin="0,0,0,10">
+                <Button Content="Отмена"
+                        Width="90"
+                        Height="32"
+                        Margin="0,0,10,0"
+                        Background="Transparent"
+                        Foreground="LightGray"
+                        BorderBrush="#666"
+                        Click="Cancel_Click"
+                        Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="6">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#33FFFFFF"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="OK"
+                        Width="90"
+                        Height="32"
+                        Background="Transparent"
+                        Foreground="LightGreen"
+                        BorderBrush="LightGreen"
+                        Click="Ok_Click"
+                        IsDefault="True"
+                        Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="6">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#11FFFFFF"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+
+            <Button x:Name="CloseButton"
+                    Content="×"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Width="26"
+                    Height="26"
+                    Background="Transparent"
+                    BorderBrush="#FF5555"
+                    Foreground="#FF5555"
+                    BorderThickness="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Click="CloseButton_Click"
+                    Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <Ellipse Fill="{TemplateBinding Background}"
+                                                 Stroke="{TemplateBinding BorderBrush}"
+                                                 StrokeThickness="{TemplateBinding BorderThickness}"/>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FF3333"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+    </Border>
+</Window>
