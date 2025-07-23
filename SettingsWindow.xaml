@@ -135,7 +135,7 @@
             </Button>
 
             <!-- Подпись внизу -->
-            <TextBlock Text="by Skp ver 0.4"
+            <TextBlock Text="by Skp ver 0.6.0"
                        Foreground="#55FFFFFF"
                        FontSize="11"
                        FontStyle="Italic"

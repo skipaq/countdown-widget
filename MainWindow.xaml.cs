@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using System.Drawing;
 using MessageBox = System.Windows.MessageBox;
+using System.Net.Http;
+using WpfApp = System.Windows.Application;
+using WinForms = System.Windows.Forms;
 
 namespace CountdownWidget
 {
@@ -13,13 +17,16 @@ namespace CountdownWidget
         private DateTime targetDate;
         private NotifyIcon notifyIcon;
         private bool isTopmost = true;
-
         internal SimpleSettings appSettings;
+        private const string CurrentVersion = "0.5.1";
+        private readonly Uri UpdateCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/version.txt");
+        private readonly Uri ChangelogCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/changelog.txt");
+        private readonly Uri DownloadPageUri = new Uri("https://github.com/skipaq/countdown-widget/releases");
 
         public MainWindow()
         {
             InitializeComponent();
-
+            Task.Run(() => CheckForUpdates());
             appSettings = LoadSettings();
 
             // Устанавливаем позицию до отображения
@@ -53,6 +60,58 @@ namespace CountdownWidget
 
             SetupNotifyIcon();
             UpdateTimer();
+        }
+
+        private async void CheckForUpdates()
+        {
+            try
+            {
+                using (var client = new System.Net.Http.HttpClient())
+                {
+                    client.Timeout = TimeSpan.FromSeconds(10);
+
+                    string latestVersion = (await client.GetStringAsync(UpdateCheckUri)).Trim();
+                    string changelog = await client.GetStringAsync(ChangelogCheckUri);
+
+                    if (CompareVersions(latestVersion, CurrentVersion) > 0)
+                    {
+                        // ✅ Исправлено: полное имя
+                        await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            var updateWindow = new UpdateWindow
+                            {
+                                Version = latestVersion,
+                                Changelog = changelog,
+                                DownloadUri = DownloadPageUri
+                            };
+                            updateWindow.Owner = this;
+                            updateWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            updateWindow.ShowDialog();
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка проверки обновлений: {ex.Message}");
+            }
+        }
+
+        private int CompareVersions(string v1, string v2)
+        {
+            string[] p1 = v1.Split('.');
+            string[] p2 = v2.Split('.');
+
+            int length = Math.Max(p1.Length, p2.Length);
+            for (int i = 0; i < length; i++)
+            {
+                int n1 = i < p1.Length ? int.Parse(p1[i]) : 0;
+                int n2 = i < p2.Length ? int.Parse(p2[i]) : 0;
+
+                if (n1 > n2) return 1;
+                if (n1 < n2) return -1;
+            }
+            return 0;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
