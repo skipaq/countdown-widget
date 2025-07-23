@@ -21,7 +21,7 @@ namespace CountdownWidget
         private const string CurrentVersion = "0.5.1";
         private readonly Uri UpdateCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/version.txt");
         private readonly Uri ChangelogCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/changelog.txt");
-        private readonly Uri DownloadPageUri = new Uri("https://github.com/skipaq/countdown-widget/releases");
+        private readonly Uri DownloadPageUri = new Uri("https://github.com/skipaq/countdown-widget/releases/latest");
 
         public MainWindow()
         {
@@ -94,6 +94,30 @@ namespace CountdownWidget
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка проверки обновлений: {ex.Message}");
+            }
+        }
+
+        private async Task<Uri> GetLatestDownloadUrl()
+        {
+            try
+            {
+                using (var client = new System.Net.Http.HttpClient())
+                {
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
+                    string json = await client.GetStringAsync("https://api.github.com/repos/ твой-логин/countdown-widget/releases/latest");
+
+                    // Простой парсинг JSON (без Newtonsoft.Json)
+                    int assetIndex = json.IndexOf("\"browser_download_url\"") + 27;
+                    int endQuote = json.IndexOf("\"", assetIndex);
+                    string url = json.Substring(assetIndex, endQuote - assetIndex);
+
+                    return new Uri(url);
+                }
+            }
+            catch
+            {
+                // Резерв: ведёт на страницу релизов
+                return new Uri("https://github.com/ твой-логин/countdown-widget/releases/latest");
             }
         }
 
