@@ -18,7 +18,7 @@ namespace CountdownWidget
         private NotifyIcon notifyIcon;
         private bool isTopmost = true;
         internal SimpleSettings appSettings;
-        private const string CurrentVersion = "0.5.1";
+        private const string CurrentVersion = "0.6.0";
         private readonly Uri UpdateCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/version.txt");
         private readonly Uri ChangelogCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/changelog.txt");
         private readonly Uri DownloadPageUri = new Uri("https://github.com/skipaq/countdown-widget/releases/latest");
