@@ -82,16 +82,9 @@ namespace CountdownWidget
 
         private void OpacityButton_Click(object sender, RoutedEventArgs e)
         {
-            if (this.Owner is MainWindow mainWindow)
-            {
-                var opacityWindow = new OpacitySettingsWindow(mainWindow);
-                opacityWindow.Owner = this;
-                opacityWindow.ShowDialog();
-            }
-            else
-            {
-                MessageBox.Show("Не удалось получить доступ к главному окну.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            var opacityWindow = new OpacitySettingsWindow((MainWindow)this.Owner);
+            opacityWindow.Owner = this;
+            opacityWindow.ShowDialog();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

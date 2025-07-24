@@ -95,7 +95,6 @@
                 </Button>
             </StackPanel>
 
-            <!-- Кнопка закрытия -->
             <Button x:Name="CloseButton"
                     Content="×"
                     FontSize="16"
@@ -133,15 +132,6 @@
                     </Style>
                 </Button.Style>
             </Button>
-
-            <!-- Подпись внизу -->
-            <TextBlock Text="by Skp :)"
-                       Foreground="#55FFFFFF"
-                       FontSize="11"
-                       FontStyle="Italic"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Bottom"
-                       Margin="0,0,0,10"/>
         </Grid>
     </Border>
 </Window>

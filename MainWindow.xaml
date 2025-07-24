@@ -45,74 +45,74 @@
     </Window.Resources>
 
     <Grid>
-        <Border Background="#FF000000" CornerRadius="15" Padding="20">
+        <Border Background="#80000000" CornerRadius="15" Padding="20">
             <Grid>
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock x:Name="LabelBlock"
-                               Foreground="White"
-                               FontSize="18"
-                               FontWeight="SemiBold"
-                               TextAlignment="Center"
-                               Margin="0,0,0,5">
-                        Осталось:
+                           Foreground="White"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           TextAlignment="Center"
+                           Margin="0,0,0,5">
+                    Осталось:
                     </TextBlock>
                     <TextBlock x:Name="TimeBlock"
-                               Foreground="White"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               TextAlignment="Center"
-                               Margin="0,0,0,15">
-                        Загрузка...
+                           Foreground="White"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           TextAlignment="Center"
+                           Margin="0,0,0,15">
+                    Загрузка...
                     </TextBlock>
                 </StackPanel>
 
                 <Button x:Name="SettingsButton"
-                        Content="⚙️"
-                        ToolTip="Настройки"
-                        Width="20" Height="20"
-                        Background="Transparent"
-                        Foreground="LightGray"
-                        BorderBrush="LightGray"
-                        BorderThickness="1"
-                        FontSize="10"
-                        Click="SettingsButton_Click"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Margin="0,0,0,0"
-                        Cursor="Hand"
-                        Style="{StaticResource TrayButtonStyle}"/>
+                    Content="⚙️"
+                    ToolTip="Настройки"
+                    Width="20" Height="20"
+                    Background="Transparent"
+                    Foreground="LightGray"
+                    BorderBrush="LightGray"
+                    BorderThickness="1"
+                    FontSize="10"
+                    Click="SettingsButton_Click"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="0,0,0,0"
+                    Cursor="Hand"
+                    Style="{StaticResource TrayButtonStyle}"/>
 
                 <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top">
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top">
                     <Button x:Name="TopmostButton"
-                            Content="📌"
-                            ToolTip="Выключить 'поверх всех окон'"
-                            Style="{StaticResource TrayButtonStyle}"
-                            Click="TopmostButton_Click"
-                            Margin="0,0,2,0"/>
+                        Content="📌"
+                        ToolTip="Выключить 'поверх всех окон'"
+                        Style="{StaticResource TrayButtonStyle}"
+                        Click="TopmostButton_Click"
+                        Margin="0,0,2,0"/>
 
                     <Button x:Name="MinimizeButton"
-                            Content="🔽"
-                            ToolTip="Свернуть в трей"
-                            Style="{StaticResource TrayButtonStyle}"
-                            Click="MinimizeButton_Click"/>
+                        Content="🔽"
+                        ToolTip="Свернуть в трей"
+                        Style="{StaticResource TrayButtonStyle}"
+                        Click="MinimizeButton_Click"/>
                 </StackPanel>
 
                 <Button x:Name="CloseButton"
-                        Content="×"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Width="26"
-                        Height="26"
-                        Background="Transparent"
-                        BorderBrush="#FF5555"
-                        Foreground="#FF5555"
-                        BorderThickness="2"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        Click="CloseButton_Click"
-                        Cursor="Hand">
+                    Content="×"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Width="26"
+                    Height="26"
+                    Background="Transparent"
+                    BorderBrush="#FF5555"
+                    Foreground="#FF5555"
+                    BorderThickness="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Click="CloseButton_Click"
+                    Cursor="Hand">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Template">
@@ -120,8 +120,8 @@
                                     <ControlTemplate TargetType="Button">
                                         <Grid>
                                             <Ellipse Fill="{TemplateBinding Background}"
-                                                     Stroke="{TemplateBinding BorderBrush}"
-                                                     StrokeThickness="{TemplateBinding BorderThickness}"/>
+                                                 Stroke="{TemplateBinding BorderBrush}"
+                                                 StrokeThickness="{TemplateBinding BorderThickness}"/>
                                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Grid>
                                     </ControlTemplate>
@@ -136,12 +136,15 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <TextBlock Text="v0.6.0"
-           Foreground="#55FFFFFF"
-           FontSize="10"
-           HorizontalAlignment="Right"
-           VerticalAlignment="Bottom"
-           Margin="0,0,10,10"/>
+
+                <!-- Подпись версии -->
+                <TextBlock Text="v0.6.8"
+                       Foreground="#55FFFFFF"
+                       FontSize="10"
+                       FontStyle="Italic"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Bottom"
+                       Margin="0,0,10,10"/>
             </Grid>
         </Border>
     </Grid>

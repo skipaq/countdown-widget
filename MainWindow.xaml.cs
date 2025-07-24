@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
-using System.Net.Http;
-using WpfApp = System.Windows.Application;
-using WinForms = System.Windows.Forms;
 
 namespace CountdownWidget
 {
@@ -17,19 +15,20 @@ namespace CountdownWidget
         private DateTime targetDate;
         private NotifyIcon notifyIcon;
         private bool isTopmost = true;
+
         internal SimpleSettings appSettings;
-        private const string CurrentVersion = "0.6.0";
+
+        private const string CurrentVersion = "0.6.8";
         private readonly Uri UpdateCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/version.txt");
         private readonly Uri ChangelogCheckUri = new Uri("https://raw.githubusercontent.com/skipaq/countdown-widget/main/changelog.txt");
-        private readonly Uri DownloadPageUri = new Uri("https://github.com/skipaq/countdown-widget/releases/latest");
+        private readonly Uri DownloadPageUri = new Uri("https://github.com/skipaq/countdown-widget/releases/download/release/CountdownWidget.exe");
 
         public MainWindow()
         {
-            InitializeComponent();
-            Task.Run(() => CheckForUpdates());
+            // ✅ Сначала загружаем настройки
             appSettings = LoadSettings();
 
-            // Устанавливаем позицию до отображения
+            // ✅ Устанавливаем позицию ДО InitializeComponent
             if (!double.IsNaN(appSettings.Left) && !double.IsNaN(appSettings.Top))
             {
                 this.Left = appSettings.Left;
@@ -40,19 +39,18 @@ namespace CountdownWidget
                 this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
-            // Устанавливаем дату
+            // ✅ Только теперь инициализируем компоненты
+            InitializeComponent();
+
             if (DateTime.TryParse(appSettings.TargetDate, out DateTime date))
                 targetDate = date;
             else
                 targetDate = new DateTime(2025, 12, 31, 23, 59, 59);
 
-            // Устанавливаем прозрачность
             this.Opacity = appSettings.Opacity;
-
-            // Иконка
             this.Icon = CreateWpfIcon();
-
             this.Topmost = isTopmost;
+
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
@@ -60,82 +58,8 @@ namespace CountdownWidget
 
             SetupNotifyIcon();
             UpdateTimer();
-        }
 
-        private async void CheckForUpdates()
-        {
-            try
-            {
-                using (var client = new System.Net.Http.HttpClient())
-                {
-                    client.Timeout = TimeSpan.FromSeconds(10);
-
-                    string latestVersion = (await client.GetStringAsync(UpdateCheckUri)).Trim();
-                    string changelog = await client.GetStringAsync(ChangelogCheckUri);
-
-                    if (CompareVersions(latestVersion, CurrentVersion) > 0)
-                    {
-                        // ✅ Исправлено: полное имя
-                        await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
-                        {
-                            var updateWindow = new UpdateWindow
-                            {
-                                Version = latestVersion,
-                                Changelog = changelog,
-                                DownloadUri = DownloadPageUri
-                            };
-                            updateWindow.Owner = this;
-                            updateWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                            updateWindow.ShowDialog();
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Ошибка проверки обновлений: {ex.Message}");
-            }
-        }
-
-        private async Task<Uri> GetLatestDownloadUrl()
-        {
-            try
-            {
-                using (var client = new System.Net.Http.HttpClient())
-                {
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
-                    string json = await client.GetStringAsync("https://api.github.com/repos/ твой-логин/countdown-widget/releases/latest");
-
-                    // Простой парсинг JSON (без Newtonsoft.Json)
-                    int assetIndex = json.IndexOf("\"browser_download_url\"") + 27;
-                    int endQuote = json.IndexOf("\"", assetIndex);
-                    string url = json.Substring(assetIndex, endQuote - assetIndex);
-
-                    return new Uri(url);
-                }
-            }
-            catch
-            {
-                // Резерв: ведёт на страницу релизов
-                return new Uri("https://github.com/ твой-логин/countdown-widget/releases/latest");
-            }
-        }
-
-        private int CompareVersions(string v1, string v2)
-        {
-            string[] p1 = v1.Split('.');
-            string[] p2 = v2.Split('.');
-
-            int length = Math.Max(p1.Length, p2.Length);
-            for (int i = 0; i < length; i++)
-            {
-                int n1 = i < p1.Length ? int.Parse(p1[i]) : 0;
-                int n2 = i < p2.Length ? int.Parse(p2[i]) : 0;
-
-                if (n1 > n2) return 1;
-                if (n1 < n2) return -1;
-            }
-            return 0;
+            Task.Run(() => CheckForUpdates());
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -349,6 +273,60 @@ namespace CountdownWidget
 
             notifyIcon?.Dispose();
             base.OnClosed(e);
+        }
+
+        private async void CheckForUpdates()
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("CountdownWidget/1.0");
+                    client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
+                    client.Timeout = TimeSpan.FromSeconds(10);
+
+                    var versionUri = new Uri(UpdateCheckUri + "?t=" + Guid.NewGuid());
+                    var changelogUri = new Uri(ChangelogCheckUri + "?t=" + Guid.NewGuid());
+
+                    string latestVersion = (await client.GetStringAsync(versionUri)).Trim();
+                    string changelog = await client.GetStringAsync(changelogUri);
+
+                    if (CompareVersions(latestVersion, CurrentVersion) > 0)
+                    {
+                        await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            var updateWindow = new UpdateWindow
+                            {
+                                Version = latestVersion,
+                                Changelog = changelog,
+                                DownloadUri = DownloadPageUri
+                            };
+                            updateWindow.Owner = this;
+                            updateWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            updateWindow.ShowDialog();
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка проверки обновлений: {ex.Message}");
+            }
+        }
+
+        private int CompareVersions(string v1, string v2)
+        {
+            string[] p1 = v1.Split('.');
+            string[] p2 = v2.Split('.');
+            int length = Math.Max(p1.Length, p2.Length);
+            for (int i = 0; i < length; i++)
+            {
+                int n1 = i < p1.Length ? int.Parse(p1[i]) : 0;
+                int n2 = i < p2.Length ? int.Parse(p2[i]) : 0;
+                if (n1 > n2) return 1;
+                if (n1 < n2) return -1;
+            }
+            return 0;
         }
     }
 

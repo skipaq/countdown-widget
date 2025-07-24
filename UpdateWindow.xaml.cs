@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Windows;
@@ -20,27 +19,35 @@ namespace CountdownWidget
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Устанавливаем заголовок
             TitleBlock.Text = $"Доступна новая версия: {Version}";
-
-            // Устанавливаем текст изменений
             ChangelogBlock.Text = Changelog?.Trim() ?? "Новые возможности и улучшения.";
         }
 
         private async void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
             string newExePath = "CountdownWidget_new.exe";
-            string updaterPath = "Updater.exe";
-            string mainExe = "CountdownWidget.exe";
+            string updaterTempPath = "Updater_temp.exe";
+            string updaterSourcePath = "Updater.exe";
 
             try
             {
+                if (!File.Exists(updaterSourcePath))
+                {
+                    MessageBox.Show(
+                        $"Файл {updaterSourcePath} не найден.\n" +
+                        "Убедитесь, что он находится в той же папке, что и программа.",
+                        "Ошибка",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
                 DownloadButton.Visibility = Visibility.Collapsed;
                 DownloadProgress.Visibility = Visibility.Visible;
 
-                using (var client = new System.Net.Http.HttpClient())
+                using (var client = new HttpClient())
                 {
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("CountdownWidget");
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("CountdownWidget/1.0");
 
                     var response = await client.GetAsync(DownloadUri, HttpCompletionOption.ResponseHeadersRead);
                     var totalBytes = response.Content.Headers.ContentLength ?? -1L;
@@ -66,28 +73,16 @@ namespace CountdownWidget
                     }
                 }
 
-                // Копируем Updater.exe рядом
-                if (File.Exists(updaterPath))
-                {
-                    File.Copy(updaterPath, "Updater_temp.exe", true);
-                }
-                else
-                {
-                    MessageBox.Show("Файл Updater.exe не найден!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
+                File.Copy(updaterSourcePath, updaterTempPath, true);
 
-                // Запускаем Updater и закрываемся
-                Process.Start("Updater_temp.exe");
+                System.Diagnostics.Process.Start(updaterTempPath);
                 Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при обновлении:\n{ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -97,9 +92,7 @@ namespace CountdownWidget
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-            {
                 this.DragMove();
-            }
         }
     }
 }
